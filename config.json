@@ -1,0 +1,10 @@
+{
+  "host": "127.0.0.1",
+  "port": 8081,
+
+  "dbHost": "127.0.0.1",
+  "dbPort": 5432,
+  "dbUser": "postgres",
+  "dbPassword": "Qwerty123",
+  "dbName": "adv"
+}

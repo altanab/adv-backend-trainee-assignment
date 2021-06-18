@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS adverts (
+    id SERIAL PRIMARY KEY,
+    adv_name VARCHAR(200) NOT NULL,
+    about VARCHAR(1000) NOT NULL,
+    photos VARCHAR(128),
+    price INTEGER DEFAULT 0,
+    created TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
