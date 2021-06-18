@@ -23,11 +23,16 @@ type Config struct {
 	DBPassword string `json:"dbPassword"`
 	DBName string `json:"dbName"`
 	DBPort int `json:"dbPort"`
+
+	PaginationLimit int `json:"pagination_limit"`
+	MaxNumPhotos int `json:"max_num_photos"`
+	MaxCharName int `json:"max_char_name"`
+	MaxCharAbout int `json:"max_char_about"`
 }
 
 func StartServer(quit chan os.Signal, config Config) {
 	dsn := fmt.Sprintf(
-		"host=%S user=%s password=%s dbname=%s port=%d sslmode=disable",
+		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
 		config.DBHost,
 		config.DBUser,
 		config.DBPassword,
@@ -52,6 +57,10 @@ func StartServer(quit chan os.Signal, config Config) {
 			&repository.AdvertRep{
 				db,
 			},
+			config.PaginationLimit,
+			config.MaxNumPhotos,
+			config.MaxCharName,
+			config.MaxCharAbout,
 		},
 	}
 

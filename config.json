@@ -6,5 +6,10 @@
   "dbPort": 5432,
   "dbUser": "postgres",
   "dbPassword": "Qwerty123",
-  "dbName": "adv"
+  "dbName": "adv",
+
+  "pagination_limit": 10,
+  "max_num_photos": 3,
+  "max_char_name": 200,
+  "max_char_about": 1000
 }

@@ -12,19 +12,21 @@ type AdvertRep struct {
 
 func (rep *AdvertRep) GetAdverts(page int, sortPrice, sortDate string, limit int) ([]advert.Advert, error) {
 	adverts := make([]advert.Advert, 0)
+	//если сортировка отсутствует, по умолчанию сортируется от "новых" к "старым"
 	var orderQuery string
-	if sortPrice != "" {
-		orderQuery += "price " + sortPrice + " "
+	switch {
+	case sortPrice != "" && sortDate != "":
+		orderQuery = "price " + sortPrice + ", created " + sortDate
+	case sortPrice != "":
+		orderQuery = "price " + sortPrice
+	case sortDate != "":
+		orderQuery = "created " + sortDate
+	default:
+		orderQuery = "created DESC"
 	}
-	if sortDate != "" {
-		orderQuery += "created " + sortDate
-	}
-
-	//использование limit и offset не самый консинстентный и эффективный, но самый простой вариант
-
 	rep.DB.
 		Table("adverts").
-		Select("id, name, photos[1], price").
+		Select("id, adv_name, photos[1] as photo, price").
 		Order(orderQuery).
 		Limit(limit).
 		Offset((page - 1) * limit).
@@ -39,7 +41,7 @@ func (rep *AdvertRep) GetAdvert(id int) (advert.Advert, error) {
 	var adv advert.Advert
 	rep.DB.
 		Table("adverts").
-		Select("name, photos, price, about").
+		Select("adv_name, photos, price, about").
 		Where("id=?", id).
 		Scan(&adv)
 	if err := rep.DB.Error; err != nil {
@@ -49,7 +51,7 @@ func (rep *AdvertRep) GetAdvert(id int) (advert.Advert, error) {
 }
 
 func (rep *AdvertRep) CreateAdvert(adv advert.Advert) (int, error) {
-	result := rep.DB.Omit("name", "about", "photos", "price").Create(&adv)
+	result := rep.DB.Select("adv_name", "about", "photos", "price").Create(&adv)
 	if err := result.Error; err != nil {
 		return 0, errors.New("cannot create advert database error: " + err.Error())
 	}

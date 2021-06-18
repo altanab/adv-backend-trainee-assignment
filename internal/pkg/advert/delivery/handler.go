@@ -53,8 +53,12 @@ func (h *AdvertHandler) CreateAdvert(c echo.Context) error {
 
 	id, err := h.AdvertUC.CreateAdvert(adv)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusConflict, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, id)
+	return c.JSON(http.StatusCreated, struct {
+		Id int `json:"id"`
+	}{
+		id,
+	})
 }
 

@@ -1,13 +1,16 @@
 package advert
 
-import "time"
+import (
+	"github.com/lib/pq"
+	"time"
+)
 
 type Advert struct {
-	Id int `json:"id"`
-	Name string `json:"name"`
+	Id int `json:"id,omitempty"`
+	Name string `json:"name" gorm:"column:adv_name"`
 	About string `json:"about,omitempty"`
-	Photos []string `json:"photos,omitempty"`
+	Photos pq.StringArray `json:"photos,omitempty" gorm:"type:varchar[]"`
 	Price int `json:"price"`
 	Created time.Time `json:"-"`
-	MainPhoto string `json:"photo,omitempty"`
+	MainPhoto string `json:"photo,omitempty" gorm:"->;column:photo"`
 }
