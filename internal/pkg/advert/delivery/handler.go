@@ -48,7 +48,7 @@ func (h *AdvertHandler) CreateAdvert(c echo.Context) error {
 	defer c.Request().Body.Close()
 	err := json.NewDecoder(c.Request().Body).Decode(&adv)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid data")
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	id, err := h.AdvertUC.CreateAdvert(adv)

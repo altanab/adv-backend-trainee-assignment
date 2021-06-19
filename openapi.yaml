@@ -1,0 +1,196 @@
+openapi: "3.0.2"
+info:
+  title: adv-backend-trainee-assignment
+  description: "Тестовое задение: Необходимо создать сервис для хранения и подачи объявлений. Объявления должны храниться в базе данных. Сервис должен предоставлять API, работающее поверх HTTP в формате JSON."
+  version: "1.0"
+servers:
+  - url: http://localhost:8081
+paths:
+  /advert:
+    get:
+      tags:
+      - Advert
+      summary: Список объявлений
+      description: |
+        Получение списка объявлений.
+        Пагинация - не более 10 объявлений на странице.
+      operationId: getAdverts
+      parameters:
+      - name: page
+        in: query
+        description: Номер страницы, для которой необходимо вывести объявления.
+        schema:
+            type: integer
+            default: 1
+      - name: price
+        in: query
+        schema:
+          type: string
+          enum: [ASC, DESC]
+        description: Сортировка по цене
+      - name: date
+        in: query
+        schema:
+          type: string
+          enum: [ASC, DESC]
+          default: DESC
+        description: Сортировка по дате создания
+      responses:
+        200:
+          description: "Информация об объявлениях"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortAdverts'
+        404:
+          description: "Объявления не найдены"
+    post:
+      tags:
+      - Advert
+      summary: "Создание объявления"
+      description: |
+        Создание нового объявления
+      operationId: createAdvert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertCreate'
+      responses:
+        200:
+          description: "Объявление успешно создано"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ID объявления
+        400:
+          description: "Переданы некорректные данные"
+        500:
+          description: "Не удалось создать объялвение"
+  /advert/{id}:
+    get:
+      tags:
+      - Advert
+      summary: "Получение объявления"
+      description: |
+        Получение конкретного объявления по id.
+      operationId: getAdvert
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: number
+        description: "id нужного объявления"
+        required: true
+      - name: fields
+        in: query
+        schema:
+          type: boolean
+        description: "Флаг для запроса опциональных полей: описание и все ссылки на фотографии"
+      responses:
+        200:
+          description: |
+            Информация об объявлениях
+            Если fields=true, в ответе есть поля - описание и фотографии
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ShortAdvert'
+                - $ref: '#/components/schemas/AdvertCreate'
+        404:
+          description: "Объявление не найдено"
+        400:
+          description: "Некорректное id"
+
+components:
+  schemas:
+    AdvertCreate:
+      description: |
+        Информация об объявлении
+      type: object
+      properties:
+        name:
+          type: string
+          description: |
+            Название объявления
+          example: Book
+        about:
+          type: string
+          format: text
+          description: |
+            Описание объявления
+          example: Best book ever
+        price:
+          type: integer
+          description: |
+            Цена
+          example: 100
+        photos:
+          description: |
+            Ссылки на фотографии
+          type: array
+          items:
+            type: string
+          example: ["media/1", "media/2", "media/3"]
+      required:
+        - name
+        - about
+        - price
+        - photos
+    ShortAdvert:
+      description: |
+        Короткая информация об объявлении
+      type: object
+      properties:
+        name:
+          type: string
+          description: |
+            Название объявления
+          example: Book
+        price:
+          type: integer
+          description: |
+            Цена
+          example: 100
+        photo:
+          description: |
+            Ссылки на главную фотографии
+          type: string
+          example: /media/main_photo
+    ShortAdvertWithId:
+      description: |
+        Короткая информация об объявлении c id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: |
+            ID
+          example: 1
+        name:
+          type: string
+          description: |
+            Название объявления
+          example: Book
+        price:
+          type: integer
+          description: |
+            Цена
+          example: 100
+        photo:
+          description: |
+            Ссылки на главную фотографии
+          type: string
+          example: /media/main_photo
+    ShortAdverts:
+      description: |
+        Объявления на странице
+      type: array
+      items:
+        $ref: '#/components/schemas/ShortAdvertWithId'
